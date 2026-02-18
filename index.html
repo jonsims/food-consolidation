@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Consolidation of American Food</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.1.0/dist/chartjs-plugin-annotation.min.js"></script>
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface-hover: #222632;
+            --border: #2a2e3a;
+            --text: #e4e4e7;
+            --text-muted: #9ca3af;
+            --accent: #f59e0b;
+            --accent-dim: rgba(245, 158, 11, 0.15);
+            --red: #ef4444;
+            --red-dim: rgba(239, 68, 68, 0.15);
+            --blue: #3b82f6;
+            --green: #22c55e;
+            --purple: #a855f7;
+            --cyan: #06b6d4;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 20px 60px;
+            background: linear-gradient(180deg, rgba(245,158,11,0.08) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--accent) 0%, #fbbf24 50%, var(--red) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 720px;
+            margin: 0 auto 32px;
+        }
+
+        .hero .stat-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .hero .stat-box {
+            text-align: center;
+        }
+
+        .hero .stat-box .number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--red);
+        }
+
+        .hero .stat-box .label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(15, 17, 23, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 0;
+        }
+
+        nav .container {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        nav .container::-webkit-scrollbar { display: none; }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 6px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        section {
+            padding: 72px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        section:last-of-type { border-bottom: none; }
+
+        .section-header {
+            margin-bottom: 40px;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .section-header .section-desc {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 700px;
+        }
+
+        .chart-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+        }
+
+        .chart-card h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .chart-card .chart-subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .chart-grid { grid-template-columns: 1fr; }
+            .chart-wrapper { height: 300px; }
+        }
+
+        .callout {
+            background: var(--red-dim);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin: 24px 0;
+            font-size: 0.95rem;
+        }
+
+        .callout strong { color: var(--red); }
+
+        .callout.amber {
+            background: var(--accent-dim);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+        .callout.amber strong { color: var(--accent); }
+
+        .sources {
+            margin-top: 16px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .sources summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .sources a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .sources a:hover { text-decoration: underline; }
+
+        .sources ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sources li {
+            margin-bottom: 4px;
+            padding-left: 12px;
+            position: relative;
+        }
+        .sources li::before {
+            content: '>';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        .merger-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 24px 0;
+        }
+
+        .merger-item {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .merger-item .year-badge {
+            background: var(--accent-dim);
+            color: var(--accent);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .merger-item .merger-detail h4 {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .merger-item .merger-detail p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .merger-item .deal-value {
+            color: var(--red);
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+        }
+
+        footer a { color: var(--accent); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        .methodology {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .methodology h3 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .methodology p {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <div class="container">
+        <h1>The Consolidation of American Food</h1>
+        <p class="subtitle">
+            How America went from millions of independent farms and processors
+            to an industry dominated by a handful of corporations &mdash; told through data.
+        </p>
+        <div class="stat-row">
+            <div class="stat-box">
+                <div class="number">-99.5%</div>
+                <div class="label">Dairy farms since 1940</div>
+            </div>
+            <div class="stat-box">
+                <div class="number">-72%</div>
+                <div class="label">Total farms since 1935</div>
+            </div>
+            <div class="stat-box">
+                <div class="number">85%</div>
+                <div class="label">Beef market, top 4 firms</div>
+            </div>
+            <div class="stat-box">
+                <div class="number">3&times;</div>
+                <div class="label">Average farm size growth</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<nav>
+    <div class="container">
+        <a href="#farms">Farms</a>
+        <a href="#dairy">Dairy</a>
+        <a href="#hogs">Hogs</a>
+        <a href="#meatpacking">Meatpacking</a>
+        <a href="#poultry">Poultry</a>
+        <a href="#grocery">Grocery</a>
+        <a href="#seeds">Seeds &amp; Chemicals</a>
+        <a href="#methodology">Methodology</a>
+    </div>
+</nav>
+
+<!-- SECTION: Total Farms & Size -->
+<section id="farms">
+    <div class="container">
+        <div class="section-header">
+            <h2>The Disappearing American Farm</h2>
+            <p class="section-desc">
+                The number of US farms peaked at 6.8 million in 1935. Today fewer than 2 million remain,
+                while the average farm has tripled in size.
+            </p>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Number of US Farms</h3>
+                <p class="chart-subtitle">Millions of farms, 1900&ndash;2024</p>
+                <div class="chart-wrapper">
+                    <canvas id="chartTotalFarms"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Average Farm Size</h3>
+                <p class="chart-subtitle">Acres per farm, 1900&ndash;2024</p>
+                <div class="chart-wrapper">
+                    <canvas id="chartFarmSize"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout amber">
+            <strong>Fewer farms, more land per farm.</strong>
+            Between 1935 and 2024, America lost nearly 5 million farms. The survivors grew:
+            the average farm went from 155 acres to 466, and the largest 4% of farms now
+            operate over half of all US cropland.
+        </div>
+
+        <details class="sources">
+            <summary>Sources</summary>
+            <ul>
+                <li><a href="https://www.ers.usda.gov/data-products/chart-gallery/chart-detail?chartId=58268" target="_blank">USDA ERS &ndash; Number of U.S. Farms</a></li>
+                <li><a href="https://www.gilderlehrman.org/history-resources/teacher-resources/statistics-trends-american-farming" target="_blank">Gilder Lehrman Institute &ndash; Trends in American Farming</a></li>
+                <li><a href="https://www.pbs.org/wgbh/americanexperience/features/troublesome-farming-us/" target="_blank">PBS American Experience &ndash; Farming in the U.S.</a></li>
+                <li><a href="https://www.nass.usda.gov/Publications/Highlights/2024/Census22_HL_FarmsFarmland.pdf" target="_blank">USDA NASS &ndash; Farms and Farmland 2022 Census Highlights</a></li>
+            </ul>
+        </details>
+    </div>
+</section>
+
+<!-- SECTION: Dairy -->
+<section id="dairy">
+    <div class="container">
+        <div class="section-header">
+            <h2>Dairy: From Every Farm to Factory Scale</h2>
+            <p class="section-desc">
+                In 1940, 4.6 million American farms had milk cows. By 2022 just 24,094 remained &mdash;
+                yet total milk production nearly doubled.
+            </p>
+        </div>
+
+        <div class="chart-card">
+            <h3>Number of US Dairy Operations</h3>
+            <p class="chart-subtitle">Farms with milk cows / licensed dairy operations, 1940&ndash;2022</p>
+            <div class="chart-wrapper">
+                <canvas id="chartDairy"></canvas>
+            </div>
+        </div>
+
+        <div class="callout">
+            <strong>99.5% of dairy farms gone.</strong>
+            From 4.6 million farms with milk cows (1940) to 24,094 farms selling milk (2022).
+            Meanwhile, the average dairy herd grew from ~5 cows to over 300. The largest 3% of
+            operations now produce more than half of America's milk.
+        </div>
+
+        <details class="sources">
+            <summary>Sources</summary>
+            <ul>
+                <li><a href="https://www.ers.usda.gov/data-products/dairy-data" target="_blank">USDA ERS &ndash; Dairy Data</a></li>
+                <li><a href="https://www.foodandpower.net/dairy" target="_blank">Food & Power &ndash; Dairy</a></li>
+                <li><a href="https://www.fb.org/market-intel/usda-report-u-s-dairy-farm-numbers-continue-to-decline" target="_blank">American Farm Bureau Federation</a></li>
+                <li><a href="https://farmdocdaily.illinois.edu/2024/02/us-dairy-herds-and-policy-and-the-2022-census-of-agriculture.html" target="_blank">farmdoc daily &ndash; US Dairy Herds and the 2022 Census</a></li>
+            </ul>
+        </details>
+    </div>
+</section>
+
+<!-- SECTION: Hogs -->
+<section id="hogs">
+    <div class="container">
+        <div class="section-header">
+            <h2>Hog Farming: The 99% Decline</h2>
+            <p class="section-desc">
+                In 1920, nearly 5 million American farms raised hogs. Today, about 56,000 remain &mdash;
+                and the vast majority of production is concentrated on massive operations.
+            </p>
+        </div>
+
+        <div class="chart-card">
+            <h3>Number of US Hog Operations</h3>
+            <p class="chart-subtitle">Farms raising hogs, 1920&ndash;2022</p>
+            <div class="chart-wrapper">
+                <canvas id="chartHogs"></canvas>
+            </div>
+        </div>
+
+        <div class="callout">
+            <strong>98.9% decline in hog farms.</strong>
+            From 4.9 million (1920) to 56,265 (2022). The share of hog inventory on operations
+            with 5,000+ head rose from 40% in 1997 to 73% by 2017. The top 4 pork packers now
+            control 67% of slaughter, up from 34% in 1980.
+        </div>
+
+        <details class="sources">
+            <summary>Sources</summary>
+            <ul>
+                <li><a href="https://porkgateway.org/resource/structure-of-u-s-pork-industry/" target="_blank">Pork Information Gateway &ndash; Structure of U.S. Pork Industry</a></li>
+                <li><a href="https://www.ers.usda.gov/topics/animal-products/hogs-pork/sector-at-a-glance" target="_blank">USDA ERS &ndash; Hogs & Pork Sector at a Glance</a></li>
+                <li><a href="https://www.nass.usda.gov/Publications/Highlights/2024/Census22_HL_Hogs_Pigs.pdf" target="_blank">USDA NASS &ndash; 2022 Census Hogs & Pigs Highlights</a></li>
+            </ul>
+        </details>
+    </div>
+</section>
+
+<!-- SECTION: Meatpacking -->
+<section id="meatpacking">
+    <div class="container">
+        <div class="section-header">
+            <h2>Meatpacking: Four Firms, 85% of Beef</h2>
+            <p class="section-desc">
+                The CR4 ratio &mdash; market share of the top 4 firms &mdash; in beef packing surged
+                from 25% in 1977 to 85% by 2019. Today, Tyson, JBS, Cargill, and National Beef
+                dominate American beef.
+            </p>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Beef Packing CR4</h3>
+                <p class="chart-subtitle">Top 4 firms' share of steer & heifer slaughter</p>
+                <div class="chart-wrapper">
+                    <canvas id="chartBeefCR4"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Meat Industry CR4 Comparison</h3>
+                <p class="chart-subtitle">Beef, pork, and broiler processing concentration</p>
+                <div class="chart-wrapper">
+                    <canvas id="chartMeatCompare"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <strong>The 1980s transformation.</strong>
+            Beef CR4 nearly tripled in a single decade, from 36% (1980) to 71% (1992),
+            driven by a wave of mergers (IBP, ConAgra, Excel/Cargill). By the mid-1990s the
+            top 4 had locked in over 80% of the market &mdash; a level maintained ever since.
+        </div>
+
+        <details class="sources">
+            <summary>Sources</summary>
+            <ul>
+                <li><a href="https://www.usda.gov/sites/default/files/documents/schaefer-et-al-2023.pdf" target="_blank">USDA &ndash; Consolidation and Concentration in U.S. Meat Processing (2023)</a></li>
+                <li><a href="https://www.choicesmagazine.org/magazine/article.php?article=121" target="_blank">Choices Magazine &ndash; Assessing Competition in U.S. Beef Packing</a></li>
+                <li><a href="https://www.richmondfed.org/publications/research/econ_focus/2020/q4/feature1" target="_blank">Richmond Fed &ndash; Unpacking the Meat Industry</a></li>
+            </ul>
+        </details>
+    </div>
+</section>
+
+<!-- SECTION: Poultry -->
+<section id="poultry">
+    <div class="container">
+        <div class="section-header">
+            <h2>Poultry: Vertical Integration</h2>
+            <p class="section-desc">
+                The broiler industry pioneered a contract-farming model where a handful of
+                integrators own the birds, feed, and processing &mdash; farmers own the debt.
+            </p>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Broiler Processing CR4</h3>
+                <p class="chart-subtitle">Top 4 firms' share of broiler slaughter, 1980&ndash;2022</p>
+                <div class="chart-wrapper">
+                    <canvas id="chartPoultryCR4"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Top Broiler Companies (2020)</h3>
+                <p class="chart-subtitle">Market share of leading broiler processors</p>
+                <div class="chart-wrapper">
+                    <canvas id="chartPoultryShare"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout amber">
+            <strong>The contract trap.</strong>
+            Unlike cattle or hog producers, broiler growers typically don't own their birds.
+            Companies like Tyson supply chicks, feed, and medicine; farmers invest $1M+ in
+            specialized houses and absorb the risk. The top 10 integrators control ~80% of production.
+        </div>
+
+        <details class="sources">
+            <summary>Sources</summary>
+            <ul>
+                <li><a href="https://www.usda.gov/sites/default/files/documents/schaefer-et-al-2023.pdf" target="_blank">USDA &ndash; Consolidation and Concentration in U.S. Meat Processing (2023)</a></li>
+                <li><a href="https://www.ers.usda.gov/topics/animal-products/poultry-eggs/sector-at-a-glance" target="_blank">USDA ERS &ndash; Poultry & Eggs Sector at a Glance</a></li>
+            </ul>
+        </details>
+    </div>
+</section>
+
+<!-- SECTION: Grocery -->
+<section id="grocery">
+    <div class="container">
+        <div class="section-header">
+            <h2>Grocery Retail: Walmart's America</h2>
+            <p class="section-desc">
+                At the state level, the top 4 grocery chains now control an average of 67%
+                of the market &mdash; up from 42.5% in 2000.
+            </p>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>State-Level Grocery CR4</h3>
+                <p class="chart-subtitle">Average top-4 market share across US states</p>
+                <div class="chart-wrapper">
+                    <canvas id="chartGroceryCR4"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>National Grocery Market Shares (2024)</h3>
+                <p class="chart-subtitle">Estimated share of US grocery sales</p>
+                <div class="chart-wrapper">
+                    <canvas id="chartGroceryShare"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <strong>The squeeze on independents.</strong>
+            Independent and single-location grocery stores have been in steady decline,
+            while supercenters (Walmart, Costco) grew 350% between 1990 and 2015. Walmart alone
+            captures roughly 1 in 4 US grocery dollars.
+        </div>
+
+        <details class="sources">
+            <summary>Sources</summary>
+            <ul>
+                <li><a href="https://grocerygapatlas.rafiusa.org/posts/market-dominance" target="_blank">RAFI USA &ndash; Grocery Gap Atlas: Market Dominance</a></li>
+                <li><a href="https://www.ers.usda.gov/amber-waves/2018/may/county-level-data-show-changes-in-the-number-and-concentration-of-food-stores" target="_blank">USDA ERS &ndash; Changes in Number and Concentration of Food Stores</a></li>
+                <li><a href="https://www.fmi.org/our-research/food-industry-facts" target="_blank">FMI &ndash; Food Industry Facts</a></li>
+            </ul>
+        </details>
+    </div>
+</section>
+
+<!-- SECTION: Seeds & Agrochemicals -->
+<section id="seeds">
+    <div class="container">
+        <div class="section-header">
+            <h2>Seeds &amp; Agrochemicals: From Six to Four</h2>
+            <p class="section-desc">
+                Three mega-mergers totaling over $230 billion collapsed the "Big Six" agrochemical
+                companies into the "Big Four," giving a few firms control of the inputs farmers
+                depend on.
+            </p>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>Global Seed Market CR4</h3>
+                <p class="chart-subtitle">Top 4 firms' share of commercial crop seeds</p>
+                <div class="chart-wrapper">
+                    <canvas id="chartSeedCR4"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Global Agrochemical CR4</h3>
+                <p class="chart-subtitle">Top 4 firms' share of agricultural chemicals</p>
+                <div class="chart-wrapper">
+                    <canvas id="chartChemCR4"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="margin: 32px 0 16px; font-size: 1.15rem;">The Mega-Mergers (2015&ndash;2018)</h3>
+        <div class="merger-timeline">
+            <div class="merger-item">
+                <span class="year-badge">2015&ndash;17</span>
+                <div class="merger-detail">
+                    <h4>Dow Chemical + DuPont &rarr; Corteva Agriscience</h4>
+                    <p>Agricultural divisions spun off as Corteva. Pioneer, Mycogen brands retained.</p>
+                    <span class="deal-value">~$130B combined entity</span>
+                </div>
+            </div>
+            <div class="merger-item">
+                <span class="year-badge">2016&ndash;17</span>
+                <div class="merger-detail">
+                    <h4>ChemChina + Syngenta</h4>
+                    <p>Chinese state-owned enterprise acquires Swiss agrochemical giant.</p>
+                    <span class="deal-value">$43B acquisition</span>
+                </div>
+            </div>
+            <div class="merger-item">
+                <span class="year-badge">2016&ndash;18</span>
+                <div class="merger-detail">
+                    <h4>Bayer + Monsanto</h4>
+                    <p>German pharma giant absorbs the world's largest seed company. Monsanto name retired.</p>
+                    <span class="deal-value">$63B acquisition</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <strong>Two companies dominate US corn.</strong>
+            Post-mergers, Corteva and Bayer together account for 72% of all planted corn
+            acres in the US, 66% of soybeans, and over 50% of cotton seed sales.
+        </div>
+
+        <details class="sources">
+            <summary>Sources</summary>
+            <ul>
+                <li><a href="https://www.ers.usda.gov/amber-waves/2019/february/mergers-in-seeds-and-agricultural-chemicals-what-happened" target="_blank">USDA ERS &ndash; Mergers in Seeds and Agricultural Chemicals</a></li>
+                <li><a href="https://www.ers.usda.gov/data-products/charts-of-note/chart-detail?chartId=107516" target="_blank">USDA ERS &ndash; Two Companies Accounted for More Than Half of Seed Sales</a></li>
+                <li><a href="https://belonging.berkeley.edu/era-corporate-consolidation-and-end-competition" target="_blank">Berkeley Othering & Belonging Institute</a></li>
+                <li><a href="https://civileats.com/2019/01/11/the-sobering-details-behind-the-latest-seed-monopoly-chart/" target="_blank">Civil Eats &ndash; The Latest Seed Monopoly Chart</a></li>
+            </ul>
+        </details>
+    </div>
+</section>
+
+<!-- SECTION: Methodology -->
+<section id="methodology">
+    <div class="container">
+        <div class="methodology">
+            <h3>Data Sources &amp; Methodology</h3>
+            <p>
+                All data in this visualization comes from authoritative government and academic sources,
+                primarily the <strong>USDA Census of Agriculture</strong> (conducted every 5 years),
+                <strong>USDA Economic Research Service (ERS)</strong>, <strong>USDA National Agricultural
+                Statistics Service (NASS)</strong>, and peer-reviewed research published or funded by USDA.
+            </p>
+            <p>
+                <strong>CR4 (Four-Firm Concentration Ratio)</strong> measures the combined market share
+                of the top four firms in an industry. A CR4 above 40% is generally considered
+                "highly concentrated" by economists; above 60% indicates oligopoly conditions.
+            </p>
+            <p>
+                Farm counts vary by definition. "Farms with milk cows" (Census) differs from
+                "licensed dairy operations" (NASS). Where estimates are interpolated between
+                known data points, they are noted. Some values marked with ~ are rounded.
+            </p>
+            <p>
+                Seed and agrochemical concentration figures are global, as these markets are
+                dominated by multinational firms. Post-2018 merger figures are estimates due
+                to required divestitures complicating precise CR4 calculations.
+            </p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>
+            Data compiled from USDA Census of Agriculture, USDA ERS, USDA NASS,
+            American Farm Bureau Federation, and peer-reviewed research.
+        </p>
+        <p style="margin-top: 8px;">
+            Built February 2026 &middot;
+            <a href="food_consolidation_data.md">View raw data &amp; full citations</a>
+        </p>
+    </div>
+</footer>
+
+<script>
+// --- Chart defaults ---
+Chart.defaults.color = '#9ca3af';
+Chart.defaults.borderColor = 'rgba(42, 46, 58, 0.6)';
+Chart.defaults.font.family = "'Inter', -apple-system, system-ui, sans-serif";
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.pointStyleWidth = 8;
+Chart.defaults.plugins.tooltip.backgroundColor = '#1a1d27';
+Chart.defaults.plugins.tooltip.borderColor = '#2a2e3a';
+Chart.defaults.plugins.tooltip.borderWidth = 1;
+Chart.defaults.plugins.tooltip.cornerRadius = 8;
+Chart.defaults.plugins.tooltip.padding = 12;
+
+const COLORS = {
+    amber: '#f59e0b',
+    amberFill: 'rgba(245, 158, 11, 0.15)',
+    red: '#ef4444',
+    redFill: 'rgba(239, 68, 68, 0.15)',
+    blue: '#3b82f6',
+    blueFill: 'rgba(59, 130, 246, 0.15)',
+    green: '#22c55e',
+    greenFill: 'rgba(34, 197, 94, 0.15)',
+    purple: '#a855f7',
+    purpleFill: 'rgba(168, 85, 247, 0.15)',
+    cyan: '#06b6d4',
+    cyanFill: 'rgba(6, 182, 212, 0.15)',
+};
+
+function areaStyle(color, fill) {
+    return {
+        borderColor: color,
+        backgroundColor: fill,
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: color,
+        borderWidth: 2.5,
+    };
+}
+
+function barStyle(color) {
+    return {
+        backgroundColor: color,
+        borderColor: color,
+        borderWidth: 0,
+        borderRadius: 4,
+    };
+}
+
+// --- 1. Total Farms ---
+new Chart(document.getElementById('chartTotalFarms'), {
+    type: 'line',
+    data: {
+        labels: ['1900','1910','1920','1930','1935','1940','1950','1960','1970','1980','1992','2002','2017','2022','2024'],
+        datasets: [{
+            label: 'Millions of farms',
+            data: [5.74, 6.41, 6.52, 6.30, 6.81, 6.35, 5.65, 3.96, 2.95, 2.43, 2.11, 2.16, 2.04, 1.90, 1.88],
+            ...areaStyle(COLORS.amber, COLORS.amberFill),
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { callback: v => v.toFixed(1) + 'M' },
+                title: { display: true, text: 'Millions of farms' }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: ctx => ctx.parsed.y.toFixed(2) + ' million farms'
+                }
+            },
+            annotation: {
+                annotations: {
+                    peak: {
+                        type: 'point',
+                        xValue: '1935',
+                        yValue: 6.81,
+                        backgroundColor: COLORS.amber,
+                        radius: 8,
+                        borderWidth: 2,
+                        borderColor: '#fff',
+                    },
+                    peakLabel: {
+                        type: 'label',
+                        xValue: '1935',
+                        yValue: 6.81,
+                        content: 'Peak: 6.81M',
+                        color: COLORS.amber,
+                        font: { weight: 'bold', size: 11 },
+                        position: 'start',
+                        yAdjust: -20,
+                    }
+                }
+            }
+        }
+    }
+});
+
+// --- 2. Average Farm Size ---
+new Chart(document.getElementById('chartFarmSize'), {
+    type: 'line',
+    data: {
+        labels: ['1900','1910','1920','1930','1935','1940','1945','1950','1974','1978','1985','2007','2017','2022','2024'],
+        datasets: [{
+            label: 'Acres per farm',
+            data: [147, 139, 149, 157, 155, 174, 195, 213, 385, 415, 440, 418, 441, 463, 466],
+            ...areaStyle(COLORS.green, COLORS.greenFill),
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: { display: true, text: 'Acres per farm' }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: ctx => ctx.parsed.y + ' acres'
+                }
+            }
+        }
+    }
+});
+
+// --- 3. Dairy ---
+new Chart(document.getElementById('chartDairy'), {
+    type: 'line',
+    data: {
+        labels: ['1940','1950','1970','1980','1992','1997','2000','2003','2007','2012','2017','2019','2020','2022'],
+        datasets: [{
+            label: 'Dairy operations (thousands)',
+            data: [4600, 3500, 648, 334, 131, 125, 105, 70, 67, 49, 39, 34, 32, 24],
+            ...areaStyle(COLORS.red, COLORS.redFill),
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                type: 'logarithmic',
+                min: 10,
+                max: 10000,
+                ticks: {
+                    callback: function(value) {
+                        const vals = [10, 50, 100, 500, 1000, 5000, 10000];
+                        if (vals.includes(value)) {
+                            return value >= 1000 ? (value/1000).toFixed(1) + 'M' : value + 'K';
+                        }
+                        return '';
+                    }
+                },
+                title: { display: true, text: 'Operations (log scale, thousands)' }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: ctx => {
+                        const v = ctx.parsed.y;
+                        return v >= 1000 ? (v/1000).toFixed(1) + ' million' : v.toLocaleString() + ',000';
+                    }
+                }
+            },
+            annotation: {
+                annotations: {
+                    start: {
+                        type: 'label',
+                        xValue: '1940',
+                        yValue: 4600,
+                        content: '4.6 million',
+                        color: COLORS.red,
+                        font: { weight: 'bold', size: 11 },
+                        yAdjust: -16,
+                    },
+                    end: {
+                        type: 'label',
+                        xValue: '2022',
+                        yValue: 24,
+                        content: '24,094',
+                        color: COLORS.red,
+                        font: { weight: 'bold', size: 11 },
+                        yAdjust: 16,
+                    }
+                }
+            }
+        }
+    }
+});
+
+// --- 4. Hogs ---
+new Chart(document.getElementById('chartHogs'), {
+    type: 'line',
+    data: {
+        labels: ['1920','1950','1965','1970','1975','1980','1985','1990','1995','2000','2007','2012','2022'],
+        datasets: [{
+            label: 'Hog operations (thousands)',
+            data: [4900, 3000, 1058, 871, 662, 667, 389, 268, 168, 86, 75, 56, 56],
+            ...areaStyle(COLORS.purple, COLORS.purpleFill),
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                type: 'logarithmic',
+                min: 30,
+                max: 10000,
+                ticks: {
+                    callback: function(value) {
+                        const vals = [30, 50, 100, 500, 1000, 5000, 10000];
+                        if (vals.includes(value)) {
+                            return value >= 1000 ? (value/1000).toFixed(1) + 'M' : value + 'K';
+                        }
+                        return '';
+                    }
+                },
+                title: { display: true, text: 'Operations (log scale, thousands)' }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    label: ctx => {
+                        const v = ctx.parsed.y;
+                        return v >= 1000 ? (v/1000).toFixed(1) + ' million' : v.toLocaleString() + ',000';
+                    }
+                }
+            },
+            annotation: {
+                annotations: {
+                    start: {
+                        type: 'label',
+                        xValue: '1920',
+                        yValue: 4900,
+                        content: '4.9 million',
+                        color: COLORS.purple,
+                        font: { weight: 'bold', size: 11 },
+                        yAdjust: -16,
+                    },
+                    end: {
+                        type: 'label',
+                        xValue: '2022',
+                        yValue: 56,
+                        content: '56,265',
+                        color: COLORS.purple,
+                        font: { weight: 'bold', size: 11 },
+                        yAdjust: 16,
+                    }
+                }
+            }
+        }
+    }
+});
+
+// --- 5. Beef CR4 ---
+new Chart(document.getElementById('chartBeefCR4'), {
+    type: 'line',
+    data: {
+        labels: ['1977','1980','1986','1987','1988','1992','1995','2000','2007','2019','2021','2023'],
+        datasets: [{
+            label: 'Beef CR4 (%)',
+            data: [25, 36, 55, 67, 70, 71, 81, 82, 80, 85, 77, 85],
+            ...areaStyle(COLORS.red, COLORS.redFill),
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                min: 0,
+                max: 100,
+                ticks: { callback: v => v + '%' },
+                title: { display: true, text: 'Market share of top 4 firms' }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: { label: ctx => ctx.parsed.y + '% of steer & heifer slaughter' }
+            },
+            annotation: {
+                annotations: {
+                    threshold: {
+                        type: 'line',
+                        yMin: 40,
+                        yMax: 40,
+                        borderColor: 'rgba(255,255,255,0.2)',
+                        borderDash: [5,5],
+                        borderWidth: 1,
+                        label: {
+                            display: true,
+                            content: '"Highly concentrated" threshold (40%)',
+                            position: 'start',
+                            color: 'rgba(255,255,255,0.4)',
+                            font: { size: 10 },
+                            backgroundColor: 'transparent',
+                        }
+                    }
+                }
+            }
+        }
+    }
+});
+
+// --- 6. Meat CR4 comparison ---
+new Chart(document.getElementById('chartMeatCompare'), {
+    type: 'bar',
+    data: {
+        labels: ['Beef Packing', 'Pork Packing', 'Broiler Processing'],
+        datasets: [
+            {
+                label: '~1980',
+                data: [25, 34, 32],
+                ...barStyle('rgba(148, 163, 184, 0.6)'),
+            },
+            {
+                label: '~2020',
+                data: [85, 67, 54],
+                ...barStyle(COLORS.red),
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                min: 0,
+                max: 100,
+                ticks: { callback: v => v + '%' },
+                title: { display: true, text: 'CR4 (%)' }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.parsed.y + '%' }
+            }
+        }
+    }
+});
+
+// --- 7. Poultry CR4 ---
+new Chart(document.getElementById('chartPoultryCR4'), {
+    type: 'line',
+    data: {
+        labels: ['1980','1986','1992','1995','2002','2006','2010','2019','2020','2022'],
+        datasets: [{
+            label: 'Broiler CR4 (%)',
+            data: [32, 35, 42, 50, 48, 58, 51, 53, 52, 57],
+            ...areaStyle(COLORS.cyan, COLORS.cyanFill),
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                min: 0,
+                max: 100,
+                ticks: { callback: v => v + '%' },
+                title: { display: true, text: 'Market share of top 4 firms' }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: { label: ctx => ctx.parsed.y + '% of broiler slaughter' }
+            },
+            annotation: {
+                annotations: {
+                    threshold: {
+                        type: 'line',
+                        yMin: 40,
+                        yMax: 40,
+                        borderColor: 'rgba(255,255,255,0.2)',
+                        borderDash: [5,5],
+                        borderWidth: 1,
+                        label: {
+                            display: true,
+                            content: '"Highly concentrated" threshold',
+                            position: 'start',
+                            color: 'rgba(255,255,255,0.4)',
+                            font: { size: 10 },
+                            backgroundColor: 'transparent',
+                        }
+                    }
+                }
+            }
+        }
+    }
+});
+
+// --- 8. Poultry market share pie ---
+new Chart(document.getElementById('chartPoultryShare'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Tyson Foods', "Pilgrim's Pride (JBS)", 'Sanderson Farms', 'Mountaire Farms', 'Others (incl. Top 5-10)', 'All other producers'],
+        datasets: [{
+            data: [20, 17, 8, 7, 28, 20],
+            backgroundColor: [
+                COLORS.red, COLORS.amber, COLORS.blue, COLORS.green, COLORS.purple, 'rgba(100,100,120,0.4)'
+            ],
+            borderWidth: 0,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'right',
+                labels: { font: { size: 11 }, padding: 12 }
+            },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ctx.label + ': ~' + ctx.parsed + '%'
+                }
+            }
+        }
+    }
+});
+
+// --- 9. Grocery CR4 ---
+new Chart(document.getElementById('chartGroceryCR4'), {
+    type: 'bar',
+    data: {
+        labels: ['2000', '2010', '2023'],
+        datasets: [{
+            label: 'State-level CR4 (%)',
+            data: [42.5, 58.8, 67.0],
+            ...barStyle(COLORS.amber),
+            barPercentage: 0.6,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                min: 0,
+                max: 100,
+                ticks: { callback: v => v + '%' },
+                title: { display: true, text: 'Avg. state-level CR4' }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: { label: ctx => ctx.parsed.y + '% average across states' }
+            }
+        }
+    }
+});
+
+// --- 10. Grocery share pie ---
+new Chart(document.getElementById('chartGroceryShare'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Walmart', 'Kroger', 'Costco', 'Albertsons', 'All others'],
+        datasets: [{
+            data: [25, 10, 7, 5, 53],
+            backgroundColor: [
+                COLORS.blue, COLORS.red, COLORS.green, COLORS.amber, 'rgba(100,100,120,0.4)'
+            ],
+            borderWidth: 0,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'right',
+                labels: { font: { size: 11 }, padding: 12 }
+            },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ctx.label + ': ~' + ctx.parsed + '%'
+                }
+            }
+        }
+    }
+});
+
+// --- 11. Seed CR4 ---
+new Chart(document.getElementById('chartSeedCR4'), {
+    type: 'line',
+    data: {
+        labels: ['1994', '2000', '2009', '2018'],
+        datasets: [{
+            label: 'Global seed CR4 (%)',
+            data: [21, 30, 54, 60],
+            ...areaStyle(COLORS.green, COLORS.greenFill),
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                min: 0,
+                max: 100,
+                ticks: { callback: v => v + '%' },
+                title: { display: true, text: 'Global CR4 (%)' }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: { label: ctx => ctx.parsed.y + '% of global commercial seeds' }
+            },
+            annotation: {
+                annotations: {
+                    mergers: {
+                        type: 'box',
+                        xMin: '2009',
+                        xMax: '2018',
+                        backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                        borderColor: 'rgba(245, 158, 11, 0.3)',
+                        borderWidth: 1,
+                        label: {
+                            display: true,
+                            content: 'Mega-merger era',
+                            position: 'start',
+                            color: COLORS.amber,
+                            font: { size: 10, weight: 'bold' },
+                            backgroundColor: 'transparent',
+                        }
+                    }
+                }
+            }
+        }
+    }
+});
+
+// --- 12. Ag Chemicals CR4 ---
+new Chart(document.getElementById('chartChemCR4'), {
+    type: 'line',
+    data: {
+        labels: ['1994', '2013', '2018'],
+        datasets: [{
+            label: 'Global agrochemical CR4 (%)',
+            data: [28.5, 62, 70],
+            ...areaStyle(COLORS.amber, COLORS.amberFill),
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                min: 0,
+                max: 100,
+                ticks: { callback: v => v + '%' },
+                title: { display: true, text: 'Global CR4 (%)' }
+            }
+        },
+        plugins: {
+            tooltip: {
+                callbacks: { label: ctx => ctx.parsed.y + '% of global ag chemicals' }
+            },
+            annotation: {
+                annotations: {
+                    mergers: {
+                        type: 'box',
+                        xMin: '2013',
+                        xMax: '2018',
+                        backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                        borderColor: 'rgba(245, 158, 11, 0.3)',
+                        borderWidth: 1,
+                        label: {
+                            display: true,
+                            content: 'Mega-merger era',
+                            position: 'start',
+                            color: COLORS.amber,
+                            font: { size: 10, weight: 'bold' },
+                            backgroundColor: 'transparent',
+                        }
+                    }
+                }
+            }
+        }
+    }
+});
+
+// --- Sticky nav active state ---
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('nav a');
+
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            navLinks.forEach(link => link.classList.remove('active'));
+            const active = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+            if (active) active.classList.add('active');
+        }
+    });
+}, { rootMargin: '-40% 0px -60% 0px' });
+
+sections.forEach(section => observer.observe(section));
+</script>
+
+</body>
+</html>
