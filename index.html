@@ -200,6 +200,29 @@
         }
         .callout.amber strong { color: var(--accent); }
 
+        .def-box {
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-left: 3px solid var(--blue);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 20px 0;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .def-box strong {
+            color: var(--blue);
+            font-weight: 600;
+        }
+
+        .def-box em {
+            color: var(--text);
+            font-style: normal;
+            font-weight: 500;
+        }
+
         .sources {
             margin-top: 16px;
             font-size: 0.8rem;
@@ -378,6 +401,16 @@
             </div>
         </div>
 
+        <div class="def-box">
+            <strong>How is a "farm" counted?</strong> The USDA defines a farm as
+            any place that produced and sold &mdash; or normally would have sold &mdash;
+            <em>at least $1,000 of agricultural products</em> during the year.
+            This threshold has been used since 1974; earlier censuses used lower cutoffs,
+            meaning some pre-1974 counts include very small homesteads that wouldn't qualify today.
+            <strong>Average farm size</strong> is total land in farms (owned <em>and</em> rented)
+            divided by total number of farms.
+        </div>
+
         <div class="callout amber">
             <strong>Fewer farms, bigger farms.</strong>
             America lost nearly 5 million farms between 1935 and today.
@@ -415,6 +448,16 @@
             <div class="chart-wrapper">
                 <canvas id="chartDairy"></canvas>
             </div>
+        </div>
+
+        <div class="def-box">
+            <strong>What counts as a dairy operation?</strong> The definition changed over time, which
+            is why the early numbers are so large. In 1940, the Census counted
+            <em>any farm that reported milking one or more cows</em> &mdash; including farms
+            where a family kept a single cow for household milk. The 2022 number (24,094) counts
+            <em>farms that actually sold milk</em> during the census year. Both counts are
+            accurate for their definitions; the shift reflects how dairy went from a near-universal
+            farm sideline to a specialized commercial industry.
         </div>
 
         <div class="callout">
@@ -455,6 +498,15 @@
             <div class="chart-wrapper">
                 <canvas id="chartHogs"></canvas>
             </div>
+        </div>
+
+        <div class="def-box">
+            <strong>What counts as a hog operation?</strong> The 1920 figure counts
+            <em>any farm that reported raising one or more hogs or pigs</em>.
+            On a 1920s farm, keeping a few pigs for slaughter was standard practice &mdash; not a
+            specialized business. The 2022 Census counts <em>farms that produced and sold hogs</em>.
+            As with dairy, the decline reflects a real structural change: what was once part of
+            everyday farming is now an industrial operation.
         </div>
 
         <div class="callout">
@@ -504,6 +556,17 @@
             </div>
         </div>
 
+        <div class="def-box">
+            <strong>How is CR4 measured here?</strong> The beef CR4 is the share of total
+            <em>federally inspected steer and heifer slaughter</em> (by head count)
+            handled by the four largest packing firms, using USDA Food Safety and Inspection
+            Service (FSIS) plant-level data. Steer and heifer slaughter is used because it
+            represents the commercial fed-cattle market &mdash; the main beef supply chain.
+            Cull cows and bulls (sold from dairy/breeding herds) are excluded.
+            <strong>Pork and broiler CR4</strong> are measured the same way: share of total
+            federally inspected slaughter by head count.
+        </div>
+
         <div class="callout">
             <strong>Most of the consolidation happened in one decade.</strong>
             A merger wave in the 1980s (IBP, ConAgra, Excel/Cargill) took the top 4's share
@@ -551,6 +614,15 @@
             </div>
         </div>
 
+        <div class="def-box">
+            <strong>What is a "broiler"?</strong> A chicken raised for meat (as opposed to
+            egg-laying hens). <strong>Market share</strong> here is measured by
+            <em>share of total birds slaughtered</em> at federally inspected plants.
+            <strong>"Vertical integration"</strong> means a single company controls the entire
+            chain: breeding, hatching, feed production, growing, slaughter, and processing.
+            The farmer's role is limited to raising the company's birds in the company's way.
+        </div>
+
         <div class="callout amber">
             <strong>Farmers don't own what they raise.</strong>
             A chicken farmer may invest over $1 million in specialized barns but never owns
@@ -594,6 +666,15 @@
                     <canvas id="chartGroceryShare"></canvas>
                 </div>
             </div>
+        </div>
+
+        <div class="def-box">
+            <strong>How is grocery concentration measured?</strong> The state-level CR4
+            is the <em>combined dollar sales</em> of the four largest grocery parent companies
+            in each state, averaged across all states (from RAFI USA's Grocery Gap Atlas,
+            built with University of Chicago). National market shares are estimated from
+            total US grocery revenue. "Grocery" here includes supermarkets, supercenters,
+            and warehouse clubs &mdash; not convenience stores or restaurants.
         </div>
 
         <div class="callout">
@@ -670,6 +751,16 @@
             </div>
         </div>
 
+        <div class="def-box">
+            <strong>How is seed/chemical concentration measured?</strong>
+            <em>Seed CR4</em> is the top 4 firms' share of <em>global commercial seed sales
+            by revenue</em> (USDA ERS). <em>Agrochemical CR4</em> is the same for
+            pesticides, herbicides, and fungicides by global revenue.
+            These are global figures because the seed and chemical markets are dominated by
+            multinational companies. The US corn/soybean figures (72% / 66%) measure
+            <em>share of planted acres</em> using seed from each company, per USDA survey data.
+        </div>
+
         <div class="callout">
             <strong>Two companies supply most of America's crop seeds.</strong>
             Corteva and Bayer together account for 72% of US corn seed, 66% of soybeans,
@@ -695,25 +786,19 @@
             <h3>About the Data</h3>
             <p>
                 All data comes from US government sources: the <strong>USDA Census of Agriculture</strong>
-                (every 5 years), <strong>USDA Economic Research Service</strong>, <strong>USDA NASS</strong>,
-                and USDA-funded research. Each section links to its original sources.
+                (conducted every 5 years), <strong>USDA Economic Research Service (ERS)</strong>,
+                <strong>USDA NASS</strong>, and USDA-funded peer-reviewed research.
+                Each section includes definitions of what's being measured, links to original sources,
+                and notes on what the numbers do and don't include.
             </p>
             <p>
-                <strong>What is CR4?</strong> The share of an industry held by its four largest companies.
-                Economists generally consider a CR4 above 40% to be "highly concentrated." Above 60%
-                is oligopoly territory. US beef packing is at 85%.
+                <strong>What is CR4?</strong> The combined market share of the four largest companies
+                in an industry. Economists generally consider a CR4 above 40% "highly concentrated"
+                and above 60% an oligopoly. For reference: US beef packing is at 85%.
             </p>
             <p>
-                <strong>A note on early farm counts.</strong> The 1940 dairy and 1920 hog numbers
-                include <em>any</em> farm that reported milk cows or hogs &mdash; which back then
-                meant almost every farm. These were not specialized operations. The decline reflects
-                a real shift: from millions of diversified family farms keeping a few animals to
-                thousands of large, single-purpose operations.
-            </p>
-            <p>
-                Seed and agrochemical figures are global (these are multinational markets).
-                Post-2018 merger CR4 values are estimates, since divestitures make exact
-                calculation complex.
+                Some values are rounded (indicated with ~). Post-2018 seed/chemical CR4 values
+                are estimates because required divestitures complicate exact calculation.
             </p>
         </div>
     </div>
